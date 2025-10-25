@@ -6,7 +6,7 @@
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
 ![Status](https://img.shields.io/badge/Status-Production%20Ready-brightgreen.svg)
 
-**Uma ferramenta Python elegante para dividir arquivos de áudio longos em segmentos menores**
+**Uma ferramenta Python elegante para dividir arquivos de áudio longos em segmentos menores e transcrever usando IA**
 
 [🚀 Instalação](#-instalação) • [📖 Como Usar](#-como-usar) • [🎯 Funcionalidades](#-funcionalidades) • [🔧 Solução de Problemas](#-solução-de-problemas)
 
@@ -16,7 +16,7 @@
 
 ## 📋 Sobre o Projeto
 
-O **Split Audio** é uma ferramenta Python desenvolvida para dividir arquivos de áudio longos em segmentos menores de 4 minutos cada. Ideal para podcasts, aulas, músicas longas ou qualquer conteúdo de áudio que precise ser segmentado para facilitar o compartilhamento ou processamento.
+O **Split Audio** é uma ferramenta Python desenvolvida para dividir arquivos de áudio longos em segmentos menores de 4 minutos cada e transcrever usando IA (Whisper). Ideal para podcasts, aulas, músicas longas ou qualquer conteúdo de áudio que precise ser segmentado e transcrito para facilitar o compartilhamento ou processamento.
 
 ### ✨ Por que usar o Split Audio?
 
@@ -26,6 +26,8 @@ O **Split Audio** é uma ferramenta Python desenvolvida para dividir arquivos de
 - 📁 **Organizado**: Cria automaticamente pastas para os arquivos divididos
 - 🌐 **Compatível**: Suporta múltiplos formatos de áudio
 - ⚡ **Rápido**: Processamento eficiente usando bibliotecas otimizadas
+- 🤖 **IA Integrada**: Transcrição automática usando Whisper
+- 📝 **Multilíngue**: Suporta transcrição em português e outros idiomas
 
 ---
 
@@ -67,7 +69,7 @@ O **Split Audio** é uma ferramenta Python desenvolvida para dividir arquivos de
 ### Instalação Manual
 
 ```bash
-pip install librosa soundfile numpy pydub
+pip install librosa soundfile numpy pydub openai-whisper torch tqdm
 ```
 
 ---
@@ -93,6 +95,31 @@ python split_audio.py aula_musica.wav
 python split_audio.py gravacao.m4a
 ```
 
+### 🎤 Funcionalidades de Transcrição
+
+```bash
+# Apenas dividir (funcionalidade original)
+python split_audio.py arquivo_de_audio.m4a
+
+# Dividir + transcrever cada segmento individualmente
+python split_audio.py arquivo_de_audio.m4a --transcrever
+
+# Apenas transcrever arquivo completo
+python split_audio.py arquivo_de_audio.m4a --apenas-transcrever
+
+# 🚀 NOVA FUNCIONALIDADE: Dividir + transcrever tudo em um arquivo único
+python split_audio.py arquivo_de_audio.m4a --transcrever-completa
+
+# Usar modelo específico do Whisper
+python split_audio.py arquivo_de_audio.m4a --transcrever --modelo base
+
+# Alterar duração dos segmentos (padrão: 4 minutos por segmento)
+python split_audio.py arquivo_de_audio.m4a --transcrever-completa --segmentos 5
+
+# Modelos disponíveis: tiny, base, small, medium, large
+python split_audio.py arquivo_de_audio.m4a --transcrever-completa --modelo small
+```
+
 ### Estrutura de Saída
 
 ```
@@ -101,9 +128,13 @@ projeto/
 ├── split_audio.py
 └── arquivo_original_dividido/
     ├── arquivo_original_parte_01.m4a
+    ├── arquivo_original_parte_01.txt      # Transcrição da parte 1
     ├── arquivo_original_parte_02.m4a
+    ├── arquivo_original_parte_02.txt      # Transcrição da parte 2
     ├── arquivo_original_parte_03.m4a
-    └── ...
+    ├── arquivo_original_parte_03.txt      # Transcrição da parte 3
+    ├── arquivo_original_transcricao_completa.txt     # 🎯 Transcrição completa em um arquivo
+    └── arquivo_original_transcricao_detalhada.txt    # 🎯 Informações detalhadas por segmento
 ```
 
 ---
@@ -111,28 +142,47 @@ projeto/
 ## 🎬 Exemplo de Execução
 
 ```bash
-$ python split_audio.py arquivo1h.m4a
+$ python split_audio.py arquivo1h.m4a --transcrever-completa --modelo base
 
-🎵 Divisor de Arquivos de Áudio
-========================================
-✓ librosa e soundfile estão instalados
+🎵 Divisor de Arquivos de Áudio com Transcrição
+==================================================
+✓ librosa, soundfile, pydub, whisper e tqdm estão instalados
 
 🎯 Processando: arquivo1h.m4a
 ----------------------------------------
+🤖 Carregando modelo Whisper 'base'...
+✓ Modelo Whisper 'base' carregado com sucesso
 🎵 Carregando arquivo: arquivo1h.m4a
 📊 Taxa de amostragem: 48000 Hz
 📊 Duração total: 69.05 minutos
 📊 Duração total: 4142.95 segundos
 ✓ Pasta criada: arquivo1h_dividido
-📁 Criando 18 segmentos de 4 minutos cada
-📁 Salvando em: arquivo1h_dividido/
-✓ Parte 01: arquivo1h_parte_01.wav (240.0s)
-✓ Parte 02: arquivo1h_parte_02.wav (240.0s)
-✓ Parte 03: arquivo1h_parte_03.wav (240.0s)
-...
-✓ Parte 18: arquivo1h_parte_18.wav (63.0s)
+📁 Preparando 18 segmentos de 4 minutos cada
+📁 Arquivos serão salvos em formato WAV para melhor transcrição
 
-🎉 Divisão concluída! 18 arquivos criados em 'arquivo1h_dividido'
+🎤 Iniciando transcrição completa de 18 segmentos...
+============================================================
+
+🎵 Transcrevendo: 100%|████████████████████| 18/18 [45:30<00:00, 151.68s/segmento]
+
+🔄 Processando segmento 01/18...
+✅ Segmento 01: O resto é seguir uma lógica dentro de 1901 para a gente poder...
+
+🔄 Processando segmento 02/18...
+✅ Segmento 02: Continuando com a explicação sobre documentação...
+
+🔄 Processando segmento 03/18...
+✅ Segmento 03: Agora vamos falar sobre os procedimentos...
+
+...
+
+🎉 Transcrição completa finalizada!
+📄 Arquivo principal: arquivo1h_transcricao_completa.txt
+📄 Arquivo detalhado: arquivo1h_transcricao_detalhada.txt
+📊 Total de segmentos processados: 18
+
+🎉 Processo completo finalizado!
+📁 Todos os arquivos salvos em: arquivo1h_dividido
 
 ✅ Processo concluído com sucesso!
 ```
@@ -145,13 +195,13 @@ $ python split_audio.py arquivo1h.m4a
 | -------------- | ------- | ------ | ------------------- |
 | **MP3**  | ✅      | ✅     | Formato mais comum  |
 | **WAV**  | ✅      | ✅     | Qualidade máxima   |
-| **M4A**  | ✅      | ✅     | Convertido para WAV |
+| **M4A**  | ✅      | ✅     | Formato de saída padrão |
 | **AAC**  | ✅      | ✅     | Alta qualidade      |
 | **FLAC** | ✅      | ✅     | Lossless            |
 | **OGG**  | ✅      | ✅     | Open source         |
 | **WMA**  | ✅      | ✅     | Windows Media       |
 
-> **Nota**: Arquivos M4A são automaticamente convertidos para WAV na saída para garantir máxima compatibilidade.
+> **Nota**: Todos os arquivos são salvos em formato M4A para manter consistência e boa compressão.
 
 ---
 
@@ -161,7 +211,7 @@ $ python split_audio.py arquivo1h.m4a
 
 ```bash
 # Solução: Reinstalar dependências
-pip install --upgrade librosa soundfile numpy
+pip install --upgrade librosa soundfile numpy pydub openai-whisper torch tqdm
 ```
 
 ### ❌ Arquivo Não Encontrado
@@ -184,6 +234,26 @@ python split_audio.py /caminho/completo/para/arquivo.mp3
 
 - Para arquivos muito grandes (>2GB), considere usar um computador com mais RAM
 - O script carrega o arquivo inteiro na memória
+
+### ❌ Problemas de Transcrição
+
+- **Transcrição vazia**: O áudio pode não conter fala clara ou ser música instrumental
+- **Modelo muito lento**: Use `--modelo tiny` para testes rápidos
+- **Qualidade ruim**: Use `--modelo large` para melhor qualidade (mais lento)
+- **Arquivo M4A**: O script converte automaticamente para WAV para melhor compatibilidade
+
+### ❌ Whisper não funciona
+
+- Primeira execução baixa o modelo (~100-300MB)
+- Certifique-se de ter conexão com internet na primeira vez
+- Modelos maiores precisam de mais RAM
+
+### ❌ Problemas com --transcrever-completa
+
+- **Barra de progresso não aparece**: Certifique-se de que o tqdm está instalado
+- **Arquivos não salvos**: Verifique se há espaço suficiente no disco
+- **Transcrição vazia**: Use modelos maiores (base, small, medium) para melhor qualidade
+- **Processo muito lento**: Use modelo `tiny` para testes rápidos
 
 ---
 

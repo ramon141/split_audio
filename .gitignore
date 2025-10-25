@@ -1,7 +1,7 @@
 # Arquivos de áudio
 *.mp3
 *.wav
-*.m4a
+# *.m4a
 *.aac
 *.flac
 *.ogg
